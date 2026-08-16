@@ -359,7 +359,7 @@ input[type="file"] { display: none; }
           <div class="hero-grid">
             <div>
               <h2>オープンチャットの「めんどい」を、まとめて片づける。</h2>
-              <p>LINEのトーク書き出しファイル（.txt）をそのまま読み込ませて、会話の可視化・荒らし検出・メンバー集計を行う統合ツールです。右上の「ファイル読込」からテキストファイルをガバッと取り込んでください。</p>
+              <p>LINEのトーク書き出しファイル（.txt）をそのまま読み込ませて、会話の可視化・荒らし検出・メンバー集計を行う統合ツールです。右上の「ファイル読込」から実際のチャットログを選択してください。</p>
               <div class="toolbar">
                 <button class="btn primary" onclick="go('analysis')">分析を開始する</button>
                 <button class="btn" onclick="go('tools')">便利ツールを見る</button>
@@ -391,7 +391,7 @@ input[type="file"] { display: none; }
           <div class="panel">
             <h4>システムメモ</h4>
             <div class="gap">
-              <div class="notice">右上の「ファイル読込」からLINEのテキスト（.txt）を選択するか、分析画面に直接ペーストして解析できます。</div>
+              <div class="notice">LINEの「トーク履歴を送信」で出力した `.txt` ファイルをそのまま読み込める専用パーサーを搭載しています。</div>
               <div class="notice warn">※ 荒らし検知は補助的な予測機能です。BAN等の最終的な判断は管理者が行ってください。</div>
             </div>
           </div>
@@ -481,12 +481,12 @@ input[type="file"] { display: none; }
         </div>
       </section>
       
-      <div class="footer">ぽぴぃオプ // CYBERPUNK EDITION v2.2 / LOCAL PROCESSING ONLY</div>
+      <div class="footer">ぽぴぃオプ // CYBERPUNK EDITION v2.3 / LINE MULTI-LINE PARSER</div>
     </div>
   </main>
 </div>
 
-<div id="modal" class="modal"><div class="modal-box"><div class="row"><h3 style="margin:0;color:var(--theme-color);">📥 トーク読込のヒント</h3><button class="icon-btn" id="modalClose">✕</button></div><p class="muted small" style="line-height:1.7;margin-top:16px;">右上の「📁 ファイル読込」ボタンからLINEで書き出したテキストファイル（.txt）を選択するだけで、ヘッダー情報等を自動で除外して一発で解析できます。もちろんテキストエリアへの貼り付けにも対応しています。</p><div class="notice warn mt">おすすめ: 大容量のチャットログもブラウザ内で瞬時にパースされます。</div></div></div>
+<div id="modal" class="modal"><div class="modal-box"><div class="row"><h3 style="margin:0;color:var(--theme-color);">📥 トーク読込のヒント</h3><button class="icon-btn" id="modalClose">✕</button></div><p class="muted small" style="line-height:1.7;margin-top:16px;">LINEのマルチライン形式（日付行とタブ区切りのメッセージ行が分かれているタイプ）のファイルにも完全対応しています。右上または分析画面の「ファイル選択」からテキストファイルを選ぶだけで、自動的に正しく解析されます。</p><div class="notice warn mt">おすすめ: 膨大なチャットログも綺麗に時系列と発言者に分解されます。</div></div></div>
 
 <script>
 let currentHueIndex = 0;
@@ -542,7 +542,6 @@ function go(id){
 }
 document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>go(b.dataset.section)));
 
-// ファイル読込処理
 function handleFileSelect(e) {
   const file = e.target.files[0];
   if(!file) return;
@@ -556,32 +555,52 @@ function handleFileSelect(e) {
 document.getElementById('fileInput').addEventListener('change', handleFileSelect);
 document.getElementById('fileInput2').addEventListener('change', handleFileSelect);
 
+// ----- LINEマルチラインパーサーの強化 -----
 function parseRows(raw){
-  const lines=raw.split(/\r?\n/), out=[];
-  let currentDate = "";
-  // 日付見出し行の正規表現 (例: 2026/8/2(日))
+  const lines = raw.split(/\r?\n/);
+  const out = [];
+  let currentDate = "2026/08/02"; // デフォルト
+
+  // 日付ヘッダーの正規表現 (例: 2026/8/2(日))
   const dateHeaderRe = /^(\d{4}\/\d{1,2}\/\d{1,2})\([^)]+\)$/;
-  // メッセージ行の正規表現 (例: 16:20\tAuto-reply\t...)
+  // メッセージ行の正規表現 (例: 16:20\tAuto-reply\t...) または (16:48\t圧倒的出入り激しい奴\t...)
   const msgRe = /^(\d{1,2}:\d{2})\t([^\t]+)\t?(.*)$/;
 
-  lines.forEach(line=>{
-    let dMatch = line.match(dateHeaderRe);
+  let lastMsg = null;
+
+  lines.forEach(line => {
+    const trimmed = line.trim();
+    if(!trimmed) return;
+
+    // ヘッダーや保存日時の行はスキップ
+    if(trimmed.startsWith('[LINE]') || trimmed.startsWith('保存日時：')) return;
+
+    // 日付行の判定
+    let dMatch = trimmed.match(dateHeaderRe);
     if(dMatch) {
       currentDate = dMatch[1];
       return;
     }
-    let m = line.match(msgRe);
+
+    // 通常メッセージ行の判定
+    let m = trimmed.match(msgRe);
     if(m) {
-      out.push({date: currentDate || "2026/01/01", time: m[1], user: m[2].trim(), text: m[3].trim()});
+      // 正常なメッセージ行
+      lastMsg = {
+        date: currentDate,
+        time: m[1],
+        user: m[2].trim(),
+        text: m[3] ? m[3].trim() : ""
+      };
+      out.push(lastMsg);
     } else {
-      // 従来のフル行形式へのフォールバック
-      const altRe = /^(\d{4}\/\d{1,2}\/\d{1,2})\([^)]*\)\s+(\d{1,2}:\d{2})\s+([^\t]+)\t?(.*)$/;
-      let m2 = line.match(altRe);
-      if(m2) {
-        out.push({date: m2[1], time: m2[2], user: m2[3].trim(), text: m2[4].trim()});
+      // 改行をまたいだメッセージの続きとみなして直前のメッセージに結合する
+      if(lastMsg) {
+        lastMsg.text += "\n" + trimmed;
       }
     }
   });
+
   return out;
 }
 
@@ -715,10 +734,10 @@ document.getElementById('clearBtn').onclick=()=>{document.getElementById('chatIn
 document.getElementById('analyzeBtn').onclick=analyze;
 document.getElementById('keywordBtn').onclick=searchKeyword;
 document.getElementById('importBtn').onclick=()=>document.getElementById('modal').classList.add('show');
-document.getElementById('modalClose').onclick=()=>document.getElementById('modal').classList.remove('show');
+document.getElementById('modalClose').onclick=()=>document.getElementById('modal'].classList.remove('show');
 
 document.getElementById('exportBtn').onclick=()=>{
-  const payload={app:'POPI-OP',version:'2.2',messages:state.rows.length,members:state.users.length,topUsers:state.users.slice(0,10),topWords:state.words.slice(0,20),risks:state.risks};
+  const payload={app:'POPI-OP',version:'2.3',messages:state.rows.length,members:state.users.length,topUsers:state.users.slice(0,10),topWords:state.words.slice(0,20),risks:state.risks};
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}); const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='popi-op-cyber-data.json';a.click();URL.revokeObjectURL(a.href);
 };
 document.getElementById('copyReportBtn').onclick=async()=>{
