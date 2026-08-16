@@ -36,12 +36,10 @@ body {
   overflow-x: hidden;
 }
 
-/* 英語と数字はサイバー風フォント */
 .en-font, .stat, .brand-mark, .breadcrumb, .chart label {
   font-family: 'Orbitron', 'Noto Sans JP', sans-serif;
 }
 
-/* 背景レイヤー */
 .bg-image {
   position: fixed;
   top: 0; left: 0; width: 100vw; height: 100vh;
@@ -73,10 +71,8 @@ button, input, textarea, select { font: inherit; }
 button { cursor: pointer; outline: none; }
 a { text-decoration: none; color: inherit; }
 
-/* 全体レイアウト - はみ出し防止にminmaxを活用 */
 .app { display: grid; grid-template-columns: 250px minmax(0, 1fr); min-height: 100vh; width: 100%; }
 
-/* サイドバー */
 .sidebar {
   position: sticky; top: 0; height: 100vh;
   padding: 24px 16px;
@@ -130,7 +126,6 @@ a { text-decoration: none; color: inherit; }
 
 .main { min-width: 0; width: 100%; }
 
-/* トップバー */
 .topbar {
   display: flex; align-items: center; justify-content: space-between;
   padding: 16px 28px; position: sticky; top: 0; z-index: 20;
@@ -142,7 +137,6 @@ a { text-decoration: none; color: inherit; }
 .breadcrumb { font-size: 10px; color: var(--theme-color); letter-spacing: 1px; margin-bottom: 2px; }
 .title { font-size: 20px; font-weight: 900; margin: 0; text-shadow: 0 0 8px rgba(255,255,255,0.2); }
 
-/* ボタン系 */
 .actions { display: flex; gap: 10px; align-items: center; }
 .icon-btn, .btn {
   background: rgba(0,0,0,0.6);
@@ -160,7 +154,6 @@ a { text-decoration: none; color: inherit; }
 
 .content { padding: 28px; width: 100%; max-width: 1400px; }
 
-/* ヒーローエリア */
 .hero {
   background: var(--panel-bg);
   border: 1px solid var(--theme-dim);
@@ -173,7 +166,6 @@ a { text-decoration: none; color: inherit; }
 .hero p { color: var(--text-muted); margin: 0 0 24px; line-height: 1.7; font-size: 13px; }
 .hero-grid { display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: stretch; }
 
-/* クイックステータス */
 .quick {
   background: rgba(0,0,0,0.5); border: 1px solid var(--line); padding: 16px;
   border-radius: 4px;
@@ -183,7 +175,6 @@ a { text-decoration: none; color: inherit; }
 .quick-row:last-child { border: 0; }
 .quick-row strong { color: #fff; font-size: 13px; }
 
-/* カードUI */
 .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 24px 0; }
 .card {
   background: var(--panel-bg); border: 1px solid var(--theme-dim); padding: 20px 16px;
@@ -198,7 +189,6 @@ a { text-decoration: none; color: inherit; }
 .trend.good { color: var(--good); text-shadow: 0 0 6px var(--good); }
 .trend.bad { color: var(--bad); text-shadow: 0 0 6px var(--bad); }
 
-/* セクション切り替え */
 .section { display: none; animation: fadeIn 0.3s ease forwards; width: 100%; }
 .section.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
@@ -208,7 +198,6 @@ a { text-decoration: none; color: inherit; }
 .section-head .en-title { font-size: 11px; font-family: 'Orbitron'; color: var(--text-muted); margin-left: 8px; font-weight: 400; }
 .section-head p { margin: 6px 0 0; color: var(--text-muted); font-size: 12px; }
 
-/* パネルレイアウト (minmaxで右端切れを防止) */
 .grid2 { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); gap: 16px; width: 100%; }
 .grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; width: 100%; }
 .panel {
@@ -222,7 +211,6 @@ a { text-decoration: none; color: inherit; }
 .muted { color: var(--text-muted); }
 .small { font-size: 11px; }
 
-/* バッジ・タグ */
 .tag {
   display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px;
   font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
@@ -234,7 +222,6 @@ a { text-decoration: none; color: inherit; }
 .tag.warn { border-color: var(--warn); color: var(--warn); }
 .tag.bad { border-color: var(--bad); color: var(--bad); }
 
-/* プログレスバー */
 .bar { height: 5px; background: rgba(255,255,255,0.1); overflow: hidden; margin: 6px 0; border-radius: 2px; }
 .bar > i { display: block; height: 100%; background: var(--theme-color); box-shadow: 0 0 8px var(--theme-color); transition: width 0.5s ease; }
 
@@ -242,7 +229,6 @@ a { text-decoration: none; color: inherit; }
 .gap { display: grid; gap: 10px; width: 100%; }
 .mt { margin-top: 16px; }
 
-/* 入力エリア */
 textarea, .input {
   width: 100%; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--line);
   padding: 12px; color: #fff; outline: none; font-family: monospace; font-size: 13px;
@@ -255,7 +241,6 @@ textarea:focus, .input:focus {
 }
 textarea { min-height: 240px; resize: vertical; line-height: 1.5; }
 
-/* チップス */
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip {
   padding: 5px 10px; background: rgba(0,0,0,0.5); border: 1px solid var(--theme-dim);
@@ -266,7 +251,6 @@ textarea { min-height: 240px; resize: vertical; line-height: 1.5; }
 .toolbar { display: flex; flex-wrap: wrap; gap: 10px; }
 .empty { padding: 30px 15px; text-align: center; color: var(--text-muted); border: 1px dashed var(--line); margin-top: 8px; font-size: 12px; border-radius: 4px; }
 
-/* イコライザーチャート */
 .chart { height: 160px; display: flex; align-items: flex-end; gap: 3px; padding: 10px 4px 4px; border-bottom: 1px solid var(--theme-dim); width: 100%; }
 .col { flex: 1; display: flex; flex-direction: column; justify-content: end; gap: 6px; min-width: 0; }
 .col span { 
@@ -277,7 +261,6 @@ textarea { min-height: 240px; resize: vertical; line-height: 1.5; }
 }
 .col label { text-align: center; color: var(--theme-color); font-size: 9px; font-family: 'Orbitron'; }
 
-/* メンバーリスト */
 .member { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); width: 100%; }
 .member:last-child { border: 0; }
 .avatar {
@@ -290,7 +273,6 @@ textarea { min-height: 240px; resize: vertical; line-height: 1.5; }
 .member b { font-size: 13px; color: #fff; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .member small { display: block; color: var(--text-muted); margin-top: 2px; font-size: 10px; }
 
-/* お知らせ */
 .notice {
   padding: 12px 16px; background: rgba(0, 0, 0, 0.4); border-left: 3px solid var(--theme-color);
   color: var(--text-main); font-size: 12px; line-height: 1.6; border-radius: 0 4px 4px 0;
@@ -298,7 +280,6 @@ textarea { min-height: 240px; resize: vertical; line-height: 1.5; }
 .notice.warn { border-color: var(--warn); color: var(--warn); }
 .notice.bad { border-color: var(--bad); color: var(--bad); }
 
-/* モーダル */
 .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; place-items: center; padding: 16px; z-index: 100; }
 .modal.show { display: grid; animation: fadeIn 0.3s; }
 .modal-box {
@@ -310,8 +291,8 @@ textarea { min-height: 240px; resize: vertical; line-height: 1.5; }
 .footer { padding: 30px 0 15px; color: var(--theme-dim); font-size: 10px; text-align: center; font-family: 'Orbitron'; letter-spacing: 1px; }
 
 input[type="checkbox"] { accent-color: var(--theme-color); transform: scale(1.1); }
+input[type="file"] { display: none; }
 
-/* レスポンシブ調整 */
 @media (max-width: 1024px) {
   .cards { grid-template-columns: repeat(2, 1fr); }
   .hero-grid, .grid2 { grid-template-columns: 1fr; }
@@ -368,7 +349,7 @@ input[type="checkbox"] { accent-color: var(--theme-color); transform: scale(1.1)
       </div>
       <div class="actions">
         <button class="btn" id="themeBtn">🎨 テーマ: CYAN</button>
-        <button class="btn primary" id="importBtn">📥 トーク読込</button>
+        <label class="btn primary" style="cursor:pointer">📁 ファイル読込<input type="file" id="fileInput" accept=".txt"></label>
       </div>
     </header>
 
@@ -378,7 +359,7 @@ input[type="checkbox"] { accent-color: var(--theme-color); transform: scale(1.1)
           <div class="hero-grid">
             <div>
               <h2>オープンチャットの「めんどい」を、まとめて片づける。</h2>
-              <p>ぽぴぃオプは、LINEのトーク履歴を解析し、会話の可視化・荒らし検出・キーワード抽出を行う統合ツールです。必要なデータを瞬時に抽出し、管理者としてのオペレーションを最適化します。</p>
+              <p>LINEのトーク書き出しファイル（.txt）をそのまま読み込ませて、会話の可視化・荒らし検出・メンバー集計を行う統合ツールです。右上の「ファイル読込」からテキストファイルをガバッと取り込んでください。</p>
               <div class="toolbar">
                 <button class="btn primary" onclick="go('analysis')">分析を開始する</button>
                 <button class="btn" onclick="go('tools')">便利ツールを見る</button>
@@ -410,7 +391,7 @@ input[type="checkbox"] { accent-color: var(--theme-color); transform: scale(1.1)
           <div class="panel">
             <h4>システムメモ</h4>
             <div class="gap">
-              <div class="notice">トーク履歴を解析モジュールに投入すると、各種データが自動的にグラフ等にマッピングされます。</div>
+              <div class="notice">右上の「ファイル読込」からLINEのテキスト（.txt）を選択するか、分析画面に直接ペーストして解析できます。</div>
               <div class="notice warn">※ 荒らし検知は補助的な予測機能です。BAN等の最終的な判断は管理者が行ってください。</div>
             </div>
           </div>
@@ -418,16 +399,11 @@ input[type="checkbox"] { accent-color: var(--theme-color); transform: scale(1.1)
       </section>
 
       <section id="analysis" class="section">
-        <div class="section-head"><div><h3>トーク分析 <span class="en-title">// DATA ANALYSIS</span></h3><p>LINEの「トーク履歴を送信」機能で書き出したテキストをペーストしてください。</p></div><div class="toolbar"><button class="btn" id="sampleBtn">サンプル読込</button><button class="btn" id="clearBtn">クリア</button></div></div>
+        <div class="section-head"><div><h3>トーク分析 <span class="en-title">// DATA ANALYSIS</span></h3><p>LINEのテキストファイルを選択するか、ここに直接ペーストしてください。</p></div><div class="toolbar"><label class="btn" style="cursor:pointer">📁 ファイル選択<input type="file" id="fileInput2" accept=".txt"></label><button class="btn" id="sampleBtn">サンプル読込</button><button class="btn" id="clearBtn">クリア</button></div></div>
         <div class="grid2">
           <div class="panel">
             <h4>1. トークデータ入力</h4>
-            <textarea id="chatInput" placeholder="入力例：
-2026/08/16(日) 20:10	たろう	こんばんは！
-2026/08/16(日) 20:11	はな	こんばんは〜
-2026/08/16(日) 20:12	たろう	今日めっちゃ人いるね
-...
-"></textarea>
+            <textarea id="chatInput" placeholder="ここにLINEのトークテキストを貼り付けるか、上のボタンからファイルを選択してください。"></textarea>
             <div class="toolbar mt"><button class="btn primary" id="analyzeBtn">✨ 分析を実行</button><button class="btn" id="copyReportBtn">📋 レポートをコピー</button></div>
           </div>
           <div class="panel">
@@ -452,7 +428,7 @@ input[type="checkbox"] { accent-color: var(--theme-color); transform: scale(1.1)
             <div class="row mt"><span>一言メッセージ（短文）比率</span><strong id="shortRate" class="en-font">--</strong></div>
             <div class="bar"><i id="shortBar" style="width:0%"></i></div>
             <div class="row mt"><span>夜間（20〜1時）活動比率</span><strong id="nightRate" class="en-font">--</strong></div>
-            <div class="bar"><i id="nightBar" style="width:0%"></i></div>
+            <div class="bar"><i id="nightRateBar" style="width:0%"></i></div>
           </div></div>
         </div>
       </section>
@@ -461,7 +437,7 @@ input[type="checkbox"] { accent-color: var(--theme-color); transform: scale(1.1)
         <div class="section-head"><div><h3>キーワード検索 <span class="en-title">// KEYWORD SCANNER</span></h3><p>ログ内から特定の言葉をインデックス検索します。</p></div></div>
         <div class="panel">
           <div class="toolbar">
-            <input id="keywordInput" class="input" style="max-width:320px" placeholder="検索ワード（例：学校, 宿題）">
+            <input id="keywordInput" class="input" style="max-width:320px" placeholder="検索ワード（例：ぽぴぃ, 勉強, ライブトーク）">
             <button class="btn primary" id="keywordBtn">検索</button>
           </div>
           <div id="keywordResults" class="empty mt">キーワードを入力して検索してください。</div>
@@ -505,12 +481,12 @@ input[type="checkbox"] { accent-color: var(--theme-color); transform: scale(1.1)
         </div>
       </section>
       
-      <div class="footer">ぽぴぃオプ // CYBERPUNK EDITION v2.1 / LOCAL PROCESSING ONLY</div>
+      <div class="footer">ぽぴぃオプ // CYBERPUNK EDITION v2.2 / LOCAL PROCESSING ONLY</div>
     </div>
   </main>
 </div>
 
-<div id="modal" class="modal"><div class="modal-box"><div class="row"><h3 style="margin:0;color:var(--theme-color);">📥 トーク読込のヒント</h3><button class="icon-btn" id="modalClose">✕</button></div><p class="muted small" style="line-height:1.7;margin-top:16px;">LINEアプリから「トーク履歴を送信」でテキストファイルを出力し、その中身をコピーしてダッシュボードの入力エリアへペーストしてください。本システムが自動的にLINE等の外部サービスへ接続することはありません。</p><div class="notice warn mt">おすすめ: 分析に必要な期間だけを切り取ってペーストすることで、処理負荷と個人情報を減らせます。</div></div></div>
+<div id="modal" class="modal"><div class="modal-box"><div class="row"><h3 style="margin:0;color:var(--theme-color);">📥 トーク読込のヒント</h3><button class="icon-btn" id="modalClose">✕</button></div><p class="muted small" style="line-height:1.7;margin-top:16px;">右上の「📁 ファイル読込」ボタンからLINEで書き出したテキストファイル（.txt）を選択するだけで、ヘッダー情報等を自動で除外して一発で解析できます。もちろんテキストエリアへの貼り付けにも対応しています。</p><div class="notice warn mt">おすすめ: 大容量のチャットログもブラウザ内で瞬時にパースされます。</div></div></div>
 
 <script>
 let currentHueIndex = 0;
@@ -566,15 +542,44 @@ function go(id){
 }
 document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>go(b.dataset.section)));
 
+// ファイル読込処理
+function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    document.getElementById('chatInput').value = evt.target.result;
+    analyze();
+  };
+  reader.readAsText(file);
+}
+document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+document.getElementById('fileInput2').addEventListener('change', handleFileSelect);
+
 function parseRows(raw){
-  const lines=raw.split(/\r?\n/).filter(Boolean), out=[];
-  const re=/^(\d{4}\/\d{1,2}\/\d{1,2})\([^)]*\)\s+(\d{1,2}:\d{2})\s+([^\t]+)\t?(.*)$/;
+  const lines=raw.split(/\r?\n/), out=[];
+  let currentDate = "";
+  // 日付見出し行の正規表現 (例: 2026/8/2(日))
+  const dateHeaderRe = /^(\d{4}\/\d{1,2}\/\d{1,2})\([^)]+\)$/;
+  // メッセージ行の正規表現 (例: 16:20\tAuto-reply\t...)
+  const msgRe = /^(\d{1,2}:\d{2})\t([^\t]+)\t?(.*)$/;
+
   lines.forEach(line=>{
-    let m=line.match(re);
-    if(m) out.push({date:m[1],time:m[2],user:m[3].trim(),text:m[4].trim()});
-    else {
-      const p=line.split('\t');
-      if(p.length>=4) out.push({date:p[0],time:p[1],user:p[2].trim(),text:p.slice(3).join('\t').trim()});
+    let dMatch = line.match(dateHeaderRe);
+    if(dMatch) {
+      currentDate = dMatch[1];
+      return;
+    }
+    let m = line.match(msgRe);
+    if(m) {
+      out.push({date: currentDate || "2026/01/01", time: m[1], user: m[2].trim(), text: m[3].trim()});
+    } else {
+      // 従来のフル行形式へのフォールバック
+      const altRe = /^(\d{4}\/\d{1,2}\/\d{1,2})\([^)]*\)\s+(\d{1,2}:\d{2})\s+([^\t]+)\t?(.*)$/;
+      let m2 = line.match(altRe);
+      if(m2) {
+        out.push({date: m2[1], time: m2[2], user: m2[3].trim(), text: m2[4].trim()});
+      }
     }
   });
   return out;
@@ -582,9 +587,9 @@ function parseRows(raw){
 
 function analyze(){
   const raw=document.getElementById('chatInput').value.trim();
-  if(!raw){ alert('トークデータを貼り付けてください。'); return; }
+  if(!raw){ alert('トークデータを読み込むか、貼り付けてください。'); return; }
   state.raw=raw; state.rows=parseRows(raw);
-  if(!state.rows.length){ alert('形式を読み取れませんでした。LINEのトーク書き出しに近い形式で貼り付けてください。'); return; }
+  if(!state.rows.length){ alert('形式を読み取れませんでした。LINEのトーク書き出しファイルを選択してください。'); return; }
 
   const userMap={}, timeMap={}, wordMap={};
   let short=0, night=0;
@@ -651,7 +656,7 @@ function renderMembers(){
   const topShare=state.users.slice(0,topN).reduce((s,x)=>s+x[1],0)/state.rows.length;
   const shortRate=state.rows.filter(r=>r.text.length<=5).length/state.rows.length;
   const nightRate=state.rows.filter(r=>{const h=+r.time.slice(0,2);return h>=20||h<=1}).length/state.rows.length;
-  setMetric('top10Share',topShare,'top10Bar'); setMetric('shortRate',shortRate,'shortBar'); setMetric('nightRate',nightRate,'nightBar');
+  setMetric('top10Share',topShare,'top10Bar'); setMetric('shortRate',shortRate,'shortBar'); setMetric('nightRate',nightRate,'nightRateBar');
 }
 function setMetric(textId,val,barId){ document.getElementById(textId).textContent=Math.round(val*100)+'%'; document.getElementById(barId).style.width=Math.round(val*100)+'%'; }
 function renderChart(){
@@ -698,7 +703,7 @@ function lottery(){
 }
 function formatNotice(){
   const t=document.getElementById('noticeInput').value.trim(); if(!t)return;
-  document.getElementById('noticeInput').value='📢 お知らせ\\n\\n'+t.replace(/[！!]{2,}/g,'！').replace(/\\n{3,}/g,'\\n\\n')+'\\n\\nご確認よろしくお願いします。';
+  document.getElementById('noticeInput').value='📢 お知らせ\n\n'+t.replace(/[！!]{2,}/g,'！').replace(/\n{3,}/g,'\n\n')+'\n\nご確認よろしくお願いします。';
 }
 const ideas=['自動ウェルカム文を時間帯で切り替える','定型文をワンタップコピー','発言急増アラート','今週の人気メンバー集計','匿名アンケートメーカー','イベント用カウントダウン','画像URLの安全チェック','管理者向け当番表'];
 document.getElementById('ideaBtn').onclick=()=>document.getElementById('ideaResult').innerHTML='<div style="font-size:14px;font-weight:700;color:#fff;">> '+esc(ideas[Math.floor(Math.random()*ideas.length)])+'</div>';
@@ -713,12 +718,12 @@ document.getElementById('importBtn').onclick=()=>document.getElementById('modal'
 document.getElementById('modalClose').onclick=()=>document.getElementById('modal').classList.remove('show');
 
 document.getElementById('exportBtn').onclick=()=>{
-  const payload={app:'POPI-OP',version:'2.1',messages:state.rows.length,members:state.users.length,topUsers:state.users.slice(0,10),topWords:state.words.slice(0,20),risks:state.risks};
+  const payload={app:'POPI-OP',version:'2.2',messages:state.rows.length,members:state.users.length,topUsers:state.users.slice(0,10),topWords:state.words.slice(0,20),risks:state.risks};
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}); const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='popi-op-cyber-data.json';a.click();URL.revokeObjectURL(a.href);
 };
 document.getElementById('copyReportBtn').onclick=async()=>{
   if(!state.rows.length)return;
-  const txt=`ぽぴぃオプ 分析レポート\\n総メッセージ: ${state.rows.length}\\nメンバー: ${state.users.length}\\n最多発言: ${state.users[0]?.[0]||'-'} (${state.users[0]?.[1]||0})\\nピーク時間: ${document.getElementById('statPeak').textContent}\\n注目ワード: ${state.words.slice(0,8).map(x=>x[0]).join(', ')}`;
+  const txt=`ぽぴぃオプ 分析レポート\n総メッセージ: ${state.rows.length}\nメンバー: ${state.users.length}\n最多発言: ${state.users[0]?.[0]||'-'} (${state.users[0]?.[1]||0})\nピーク時間: ${document.getElementById('statPeak').textContent}\n注目ワード: ${state.words.slice(0,8).map(x=>x[0]).join(', ')}`;
   await navigator.clipboard?.writeText(txt); alert('分析レポートをコピーしました。');
 };
 document.getElementById('wipeBtn').onclick=()=>{if(confirm('ブラウザ内の一時データを消去しますか？')){localStorage.clear();location.reload();}};
