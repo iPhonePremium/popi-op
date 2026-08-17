@@ -97,13 +97,13 @@ a { text-decoration: none; color: inherit; }
 .brand h1 { font-size: 16px; margin: 0; letter-spacing: 1px; text-shadow: 0 0 8px var(--theme-glow); font-weight: 900; white-space: nowrap; }
 .brand span { display: block; color: var(--theme-color); font-size: 9px; margin-top: 2px; letter-spacing: 1px; }
 
-.nav { display: grid; gap: 8px; }
+.nav { display: grid; gap: 4px; }
 .nav button {
   border: 1px solid transparent; background: transparent;
   color: var(--text-muted); text-align: left;
-  padding: 12px 14px; display: flex; gap: 10px; align-items: center;
+  padding: 10px 14px; display: flex; gap: 10px; align-items: center;
   transition: all 0.3s;
-  font-weight: 700; font-size: 13px;
+  font-weight: 700; font-size: 12px;
   border-radius: 6px;
   width: 100%;
 }
@@ -117,7 +117,7 @@ a { text-decoration: none; color: inherit; }
   color: var(--theme-color);
   box-shadow: inset 0 0 15px var(--theme-dim), 0 0 10px var(--theme-glow);
 }
-.nav .emoji { width: 20px; text-align: center; filter: grayscale(1) brightness(2); }
+.nav .emoji { width: 18px; text-align: center; filter: grayscale(1) brightness(2); }
 .nav button.active .emoji { filter: none; text-shadow: 0 0 8px var(--theme-color); }
 .nav .en-sub { font-size: 8px; opacity: 0.6; display: block; font-family: 'Orbitron'; letter-spacing: 1px; }
 
@@ -252,20 +252,19 @@ textarea { min-height: 240px; resize: vertical; line-height: 1.5; }
 .toolbar { display: flex; flex-wrap: wrap; gap: 10px; }
 .empty { padding: 30px 15px; text-align: center; color: var(--text-muted); border: 1px dashed var(--line); margin-top: 8px; font-size: 12px; border-radius: 4px; }
 
-.chart { height: 160px; display: grid; grid-template-columns: repeat(24, 1fr); align-items: end; column-gap: 2px; padding: 10px 4px 4px; border-bottom: 1px solid var(--theme-dim); width: 100%; box-sizing: border-box; overflow: hidden; }
-.col { width: 100%; min-width: 0; height: 100%; display: flex; flex-direction: column; justify-content: end; gap: 6px; box-sizing: border-box; }
-.chart .chart-hour{
+.chart { height: 160px; display: flex; align-items: end; gap: 4px; padding: 10px 4px 4px; border-bottom: 1px solid var(--theme-dim); width: 100%; box-sizing: border-box; overflow-x: auto; overflow-y: hidden; }
+.col { flex: 1; min-width: 15px; height: 100%; display: flex; flex-direction: column; justify-content: end; gap: 6px; box-sizing: border-box; }
+.chart .chart-hour, .chart .chart-label {
   display:block;
   width:100%;
   text-align:center;
   font-family:Arial,Helvetica,sans-serif;
   font-variant-numeric:tabular-nums;
-  font-size:12px;
+  font-size:10px;
   letter-spacing:0;
   line-height:1;
   white-space:nowrap;
-  transform:none;
-  writing-mode:horizontal-tb;
+  color: var(--theme-color);
 }
 .col span { 
   height: var(--h); background: var(--theme-color); opacity: 0.8;
@@ -273,7 +272,6 @@ textarea { min-height: 240px; resize: vertical; line-height: 1.5; }
   border-radius: 2px 2px 0 0;
   width: 100%;
 }
-.col label { text-align: center; color: var(--theme-color); font-size: 9px; font-family: 'Orbitron'; }
 
 .member { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); width: 100%; }
 .member:last-child { border: 0; }
@@ -314,7 +312,7 @@ input[type="file"] { display: none; }
   .sidebar { padding: 20px 8px; }
   .brand { justify-content: center; margin-bottom: 24px; }
   .brand .text, .nav button span:not(.emoji), .side-bottom { display: none; }
-  .nav button { justify-content: center; padding: 12px; }
+  .nav button { justify-content: center; padding: 10px; }
 }
 @media (max-width: 680px) {
   .app { grid-template-columns: 1fr; }
@@ -322,7 +320,7 @@ input[type="file"] { display: none; }
   .brand { margin: 0; }
   .brand-mark { width: 32px; height: 32px; font-size: 14px; }
   .nav { display: flex; overflow-x: auto; flex: 1; margin-left: 8px; gap: 4px; }
-  .nav button { padding: 8px 10px; width: auto; }
+  .nav button { padding: 8px 10px; width: auto; font-size:11px; }
   .topbar { padding: 12px 16px; top: 49px; }
   .content { padding: 16px 12px; }
   .cards { grid-template-columns: 1fr; gap: 12px; }
@@ -358,9 +356,10 @@ input[type="file"] { display: none; }
     <nav class="nav">
       <button type="button" class="active" data-section="home"><span class="emoji">🏠</span><div><span>ダッシュボード</span><span class="en-sub">DASHBOARD</span></div></button>
       <button type="button" data-section="analysis"><span class="emoji">📊</span><div><span>トーク分析</span><span class="en-sub">ANALYSIS</span></div></button>
+      <button type="button" data-section="daily"><span class="emoji">📅</span><div><span>日別トレンド</span><span class="en-sub">DAILY TREND</span></div></button>
       <button type="button" data-section="members"><span class="emoji">👥</span><div><span>メンバー分析</span><span class="en-sub">MEMBERS</span></div></button>
+      <button type="button" data-section="media"><span class="emoji">🖼️</span><div><span>メディア分析</span><span class="en-sub">MEDIA STATS</span></div></button>
       <button type="button" data-section="keywords"><span class="emoji">🔎</span><div><span>キーワード</span><span class="en-sub">KEYWORDS</span></div></button>
-      <!-- 追加: ユーザー発言抽出機能へのナビ -->
       <button type="button" data-section="userlog"><span class="emoji">🕵️</span><div><span>発言抽出</span><span class="en-sub">USER LOG</span></div></button>
       <button type="button" data-section="moderation"><span class="emoji">🛡️</span><div><span>荒らしチェック</span><span class="en-sub">SECURITY</span></div></button>
       <button type="button" data-section="tools"><span class="emoji">🧰</span><div><span>便利ツール</span><span class="en-sub">TOOLS</span></div></button>
@@ -445,6 +444,32 @@ input[type="file"] { display: none; }
         </div>
       </section>
 
+      <!-- 新機能1: 日別トレンド -->
+      <section id="daily" class="section">
+        <div class="section-head">
+          <div>
+            <h3>日別トレンド <span class="en-title">// DAILY TREND</span></h3>
+            <p>日ごとのメッセージ数推移を可視化し、アクティビティの波を把握します。</p>
+          </div>
+        </div>
+        <div class="panel">
+          <h4>📊 日別メッセージ数</h4>
+          <div class="chart" id="dailyChart" style="height:200px; margin-bottom:16px;"></div>
+        </div>
+        <div class="grid2 mt">
+          <div class="panel">
+            <h4>🗓️ 詳細リスト</h4>
+            <div id="dailyList" class="empty">分析を待機中...</div>
+          </div>
+          <div class="panel">
+            <h4>💡 インサイト</h4>
+            <div class="gap" id="dailyInsights">
+              <div class="notice">十分なデータがありません。</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="members" class="section">
         <div class="section-head"><div><h3>メンバー分析 <span class="en-title">// MEMBER PROFILES</span></h3><p>発言データに基づく参加者の活動傾向モデリング。</p></div></div>
         <div class="grid2">
@@ -457,6 +482,38 @@ input[type="file"] { display: none; }
             <div class="row mt"><span>夜間（20〜1時）活動比率</span><strong id="nightRate" class="en-font">--</strong></div>
             <div class="bar"><i id="nightRateBar" style="width:0%"></i></div>
           </div></div>
+        </div>
+      </section>
+
+      <!-- 新機能2: メディア分析 -->
+      <section id="media" class="section">
+        <div class="section-head">
+          <div>
+            <h3>メディア分析 <span class="en-title">// MEDIA STATS</span></h3>
+            <p>スタンプ、写真、動画の利用状況と、頻繁に送信しているメンバーを抽出します。</p>
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="panel">
+            <h4>📦 メディア全体割合</h4>
+            <div class="gap" id="mediaSummary">
+              <div class="empty">分析を待機中...</div>
+            </div>
+          </div>
+          <div class="panel">
+            <h4>🏆 スタンプ送信数トップ</h4>
+            <div id="stampRanking" class="empty">分析を待機中...</div>
+          </div>
+        </div>
+        <div class="grid2 mt">
+          <div class="panel">
+            <h4>📸 写真・動画送信数トップ</h4>
+            <div id="photoRanking" class="empty">分析を待機中...</div>
+          </div>
+          <div class="panel">
+            <h4>🎙️ その他（音声・ファイル）</h4>
+            <div id="otherMediaRanking" class="empty">分析を待機中...</div>
+          </div>
         </div>
       </section>
 
@@ -475,7 +532,7 @@ input[type="file"] { display: none; }
         </div>
       </section>
 
-      <!-- 追加: ユーザー発言抽出セクション -->
+      <!-- ユーザー発言抽出セクション -->
       <section id="userlog" class="section">
         <div class="section-head">
           <div>
@@ -565,7 +622,7 @@ input[type="file"] { display: none; }
         </div>
       </section>
       
-      <div class="footer">ぽぴぃオプ // CYBERPUNK EDITION v2.4 / LINE MULTI-LINE PARSER</div>
+      <div class="footer">ぽぴぃオプ // CYBERPUNK EDITION v2.6 / MULTI-LINE & SYSTEM CLEANER</div>
     </div>
   </main>
 </div>
@@ -590,25 +647,31 @@ document.getElementById('themeBtn').onclick = () => {
   document.getElementById('themeBtn').innerHTML = `🎨 テーマ: ${t.name}`;
 };
 
-const state = { raw:"", rows:[], users:[], words:[], times:{}, risks:[] };
+const state = { 
+  raw:"", rows:[], users:[], words:[], times:{}, risks:[],
+  daily: {}, media: { stamps:0, photos:0, videos:0, others:0, stampUsers:{}, photoUsers:{}, otherUsers:{} }
+};
 
-// サンプルデータも検証をパスするように修正
+// サンプルデータ
 const sample = `[LINE] 蹴られる前にアナウンス打ったら副官🎁　～2代目カフェオプ（元ぽぴオプ）～のトーク
-保存日時：2026/08/16 21:05
-2026/08/16(日) 20:01\tたろう\tこんばんは！
-2026/08/16(日) 20:02\tみお\tこんばんは〜
-2026/08/16(日) 20:03\tたろう\t今日めっちゃ人いるね
-2026/08/16(日) 20:03\tけん\tよろしく！
-2026/08/16(日) 20:04\tみお\tよろしくお願いします！
-2026/08/16(日) 20:08\tはる\t宿題終わらない
-2026/08/16(日) 20:09\tけん\tわかる
-2026/08/16(日) 20:10\tたろう\t学校明日だっけ？
-2026/08/16(日) 20:11\tみお\t明日だよ
-2026/08/16(日) 21:00\tたろう\tお知らせです
-2026/08/16(日) 21:01\tたろう\t明日の集合は9時です
-2026/08/16(日) 21:01\tけん\thttps://example.com
-2026/08/16(日) 21:02\tけん\thttps://example.com
-2026/08/16(日) 21:02\tけん\thttps://example.com`;
+保存日時：2026/08/18 21:05
+2026/08/16(日)
+20:01\tたろう\tこんばんは！
+20:02\tみお\tこんばんは〜
+20:03\tたろう\t今日めっちゃ人いるね
+20:03\tけん\tよろしく！
+20:04\tみお\tよろしくお願いします！
+20:08\tはる\t[スタンプ]
+20:09\tけん\tわかる
+20:10\tたろう\t学校明日だっけ？
+20:11\tみお\t[写真]
+2026/08/17(月)
+21:00\tたろう\tお知らせです
+21:01\tたろう\t明日の集合は9時です
+21:01\tけん\thttps://example.com
+21:01\tシステムメッセージ\tけんが退会させました。
+21:02\tみお\t了解！
+21:02\tみお\t[スタンプ]`;
 
 function go(id){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
@@ -617,7 +680,9 @@ function go(id){
   const names={
     home:['SYSTEM / DASHBOARD','管理コンソール'],
     analysis:['SYSTEM / ANALYSIS','トーク分析'],
+    daily:['SYSTEM / DAILY TREND','日別トレンド'],
     members:['SYSTEM / MEMBERS','メンバー分析'],
+    media:['SYSTEM / MEDIA STATS','メディア分析'],
     keywords:['SYSTEM / KEYWORDS','キーワード検索'],
     userlog:['SYSTEM / USER LOG','発言抽出'],
     moderation:['SYSTEM / SECURITY','荒らしチェック'],
@@ -643,14 +708,17 @@ function handleFileSelect(e) {
 document.getElementById('fileInput').addEventListener('change', handleFileSelect);
 document.getElementById('fileInput2').addEventListener('change', handleFileSelect);
 
-// ----- LINEマルチラインパーサー -----
+// ----- LINEマルチラインパーサー (システムメッセージ除外強化版) -----
 function parseRows(raw){
   const lines = raw.split(/\r?\n/);
   const out = [];
-  let currentDate = "2026/08/02"; // デフォルト
+  let currentDate = "2026/08/02";
 
   const dateHeaderRe = /^(\d{4}\/\d{1,2}\/\d{1,2})\([^)]+\)$/;
   const msgRe = /^(\d{1,2}:\d{2})\t([^\t]+)\t?(.*)$/;
+  
+  // システムメッセージと思われるパターン
+  const sysPatterns = /参加しました|退出しました|退会させました|招待しました|送信を取り消しました|ノートに追加しました|アルバムを作成しました|写真を追加しました|イベントを追加しました|グループ通話/;
 
   let lastMsg = null;
 
@@ -667,13 +735,27 @@ function parseRows(raw){
 
     let m = trimmed.match(msgRe);
     if(m) {
-      lastMsg = {
-        date: currentDate,
-        time: m[1],
-        user: m[2].trim(),
-        text: m[3] ? m[3].trim() : ""
-      };
-      out.push(lastMsg);
+      let userStr = m[2].trim();
+      let textStr = m[3] ? m[3].trim() : "";
+      
+      // 除外ロジック
+      let isSystem = false;
+      // 1. テキストが空で、ユーザー名部分に「参加しました」等が含まれている場合
+      if(textStr === "" && sysPatterns.test(userStr)) isSystem = true;
+      // 2. テキストそのものが「メッセージの送信を取り消しました」等の場合
+      if(textStr === "メッセージの送信を取り消しました" || textStr === "メッセージを削除しました") isSystem = true;
+      // 3. ユーザー名が存在しない（"システムメッセージ"などの扱いになっているもの）で、内容がシステム系の場合
+      if(sysPatterns.test(textStr) && (userStr === "システムメッセージ" || userStr === "LINE")) isSystem = true;
+
+      if(!isSystem) {
+        lastMsg = {
+          date: currentDate,
+          time: m[1],
+          user: userStr,
+          text: textStr
+        };
+        out.push(lastMsg);
+      }
     } else {
       if(lastMsg) lastMsg.text += "\n" + trimmed;
     }
@@ -703,29 +785,58 @@ function analyze(){
 
   const userMap={}, timeMap={}, wordMap={};
   let short=0, night=0;
+  
+  // 初期化 (日別・メディア)
+  state.daily = {};
+  state.media = { stamps:0, photos:0, videos:0, others:0, stampUsers:{}, photoUsers:{}, otherUsers:{} };
+
   state.rows.forEach(r=>{
+    // 基本集計
     userMap[r.user]=(userMap[r.user]||0)+1;
     const h=parseInt(r.time.slice(0,2),10); timeMap[h]=(timeMap[h]||0)+1;
     if(r.text.length<=5) short++;
     if(h>=20 || h<=1) night++;
-    r.text.replace(/https?:\/\/\S+/g,'').split(/[\s、。,.!?！？「」『』（）()\[\]【】\n]+/).forEach(w=>{
-      const t=w.trim();
-      const normalized = t.replace(/[：]/g, ':').trim();
-      const isTime = /^(?:[01]?\d|2[0-3]):[0-5]\d$/.test(normalized);
-      const isTimeLike = /^(?:[01]?\d|2[0-3])\s*[:：]\s*[0-5]\d$/.test(normalized);
-      const isDate = /^\d{4}[\/\-.]\d{1,2}[\/\-.]\d{1,2}$/.test(normalized);
-      const isDateTime = /^\d{4}[\/\-.]\d{1,2}[\/\-.]\d{1,2}[ T].*$/.test(normalized);
+    
+    // 日別集計
+    state.daily[r.date] = (state.daily[r.date] || 0) + 1;
+    
+    // メディア集計
+    if(r.text === '[スタンプ]') {
+        state.media.stamps++;
+        state.media.stampUsers[r.user] = (state.media.stampUsers[r.user]||0)+1;
+    } else if(r.text === '[写真]') {
+        state.media.photos++;
+        state.media.photoUsers[r.user] = (state.media.photoUsers[r.user]||0)+1;
+    } else if(r.text === '[動画]') {
+        state.media.videos++;
+        state.media.photoUsers[r.user] = (state.media.photoUsers[r.user]||0)+1; // 写真と動画はまとめる
+    } else if(r.text === '[ファイル]' || r.text === '[音声メッセージ]' || r.text === '[連絡先]') {
+        state.media.others++;
+        state.media.otherUsers[r.user] = (state.media.otherUsers[r.user]||0)+1;
+    }
 
-      if(
-        normalized.length>=2 &&
-        !isTime && !isTimeLike && !isDate && !isDateTime &&
-        !/^\d+$/.test(normalized) &&
-        !/^[\W_]+$/u.test(normalized)
-      ){
-        wordMap[t]=(wordMap[t]||0)+1;
-      }
-    });
+    // ワード集計
+    if(!r.text.startsWith('[')) { // スタンプ等を除外
+        r.text.replace(/https?:\/\/\S+/g,'').split(/[\s、。,.!?！？「」『』（）()\[\]【】\n]+/).forEach(w=>{
+          const t=w.trim();
+          const normalized = t.replace(/[：]/g, ':').trim();
+          const isTime = /^(?:[01]?\d|2[0-3]):[0-5]\d$/.test(normalized);
+          const isTimeLike = /^(?:[01]?\d|2[0-3])\s*[:：]\s*[0-5]\d$/.test(normalized);
+          const isDate = /^\d{4}[\/\-.]\d{1,2}[\/\-.]\d{1,2}$/.test(normalized);
+          const isDateTime = /^\d{4}[\/\-.]\d{1,2}[\/\-.]\d{1,2}[ T].*$/.test(normalized);
+
+          if(
+            normalized.length>=2 &&
+            !isTime && !isTimeLike && !isDate && !isDateTime &&
+            !/^\d+$/.test(normalized) &&
+            !/^[\W_]+$/u.test(normalized)
+          ){
+            wordMap[t]=(wordMap[t]||0)+1;
+          }
+        });
+    }
   });
+  
   state.users=Object.entries(userMap).sort((a,b)=>b[1]-a[1]);
   state.words=Object.entries(wordMap).sort((a,b)=>b[1]-a[1]).slice(0,30);
   state.times=timeMap;
@@ -747,7 +858,11 @@ function analyze(){
   renderRisks();
   renderChart();
   renderAutoWords();
-  updateUserSelect(); // 新機能：ユーザー抽出のセレクトボックス更新
+  updateUserSelect(); 
+  
+  // 新機能の描画
+  renderDaily();
+  renderMedia();
   
   go('analysis');
 }
@@ -764,11 +879,89 @@ function renderSummary(short,night){
       <div class="row"><span>夜間メッセージ率</span><strong class="en-font" style="color:#fff">${rate(night,state.rows.length)}%</strong></div>
     </div>`;
 }
+
 function renderTime(){
   const entries=Object.entries(state.times).sort((a,b)=>Number(a[0])-Number(b[0]));
   const max=Math.max(...entries.map(x=>x[1]),1);
   document.getElementById('timeBreakdown').innerHTML=entries.length?entries.map(([h,n])=>`<div class="small row" style="margin:6px 0;"><span>${String(h).padStart(2,'0')}:00</span><span style="width:60%"><span class="bar" style="display:block"><i style="width:${Math.round(n/max*100)}%"></i></span></span><strong style="color:#fff">${n}</strong></div>`).join(''):'<div class="empty">データなし</div>';
 }
+function renderChart(){
+  const el=document.getElementById('miniChart'), max=Math.max(...Array.from({length:24},(_,i)=>state.times[i]||0),1);
+  el.innerHTML=Array.from({length:24},(_,i)=>`<div class="col"><span style="--h:${Math.max(4,Math.round((state.times[i]||0)/max*130))}px"></span><label class="chart-hour">${i}</label></div>`).join('');
+}
+
+// ----- 新機能: 日別トレンド描画 -----
+function renderDaily() {
+  const dates = Object.keys(state.daily).sort();
+  if(!dates.length) return;
+  
+  // グラフ用 (直近30日程度に絞る)
+  const recentDates = dates.slice(-30);
+  const maxDaily = Math.max(...recentDates.map(d => state.daily[d]), 1);
+  
+  const chartEl = document.getElementById('dailyChart');
+  chartEl.innerHTML = recentDates.map(d => {
+    const val = state.daily[d];
+    const shortDate = d.substring(5); // 08/16
+    return `<div class="col" title="${d}: ${val}件"><span style="--h:${Math.max(4,Math.round(val/maxDaily*160))}px"></span><label class="chart-label">${shortDate}</label></div>`;
+  }).join('');
+  
+  // リスト用 (降順)
+  const listEl = document.getElementById('dailyList');
+  listEl.innerHTML = [...dates].reverse().slice(0, 15).map(d => `
+    <div class="row" style="padding:6px 0;border-bottom:1px dashed var(--line);">
+      <span class="en-font" style="color:#fff">${d}</span>
+      <span class="tag" style="background:transparent">${state.daily[d]} 件</span>
+    </div>
+  `).join('');
+  
+  // インサイト生成
+  const totalDays = dates.length;
+  const avgDaily = Math.round(state.rows.length / totalDays);
+  const peakDate = dates.reduce((a, b) => state.daily[a] > state.daily[b] ? a : b);
+  
+  document.getElementById('dailyInsights').innerHTML = `
+    <div class="row"><span>分析期間</span><strong style="color:#fff">${totalDays} 日間</strong></div>
+    <div class="row"><span>1日あたりの平均</span><strong style="color:#fff">${avgDaily} 件/日</strong></div>
+    <div class="row mt"><span>最も活発だった日</span><strong style="color:var(--theme-color)">${peakDate}</strong></div>
+    <div class="row"><span>└ その日の件数</span><strong style="color:#fff">${state.daily[peakDate]} 件</strong></div>
+  `;
+}
+
+// ----- 新機能: メディア分析描画 -----
+function renderMedia() {
+  const total = state.rows.length || 1;
+  const m = state.media;
+  const textCount = total - m.stamps - m.photos - m.videos - m.others;
+  
+  const pStamp = Math.round(m.stamps/total*100);
+  const pPhoto = Math.round((m.photos + m.videos)/total*100);
+  
+  document.getElementById('mediaSummary').innerHTML = `
+    <div class="row"><span>テキストメッセージ</span><strong style="color:#fff">${textCount} 件 (${Math.round(textCount/total*100)}%)</strong></div>
+    <div class="row"><span>スタンプ</span><strong style="color:#fff">${m.stamps} 回 (${pStamp}%)</strong></div>
+    <div class="row"><span>写真・動画</span><strong style="color:#fff">${m.photos + m.videos} 回 (${pPhoto}%)</strong></div>
+    <div class="row"><span>その他メディア</span><strong style="color:#fff">${m.others} 回</strong></div>
+  `;
+  
+  const sortMap = (obj) => Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0, 8);
+  
+  const sTop = sortMap(m.stampUsers);
+  document.getElementById('stampRanking').innerHTML = sTop.length ? sTop.map(([u,n], i) => `
+    <div class="member"><div class="avatar">${i+1}</div><div class="meta"><b>${esc(u)}</b><small>${n} 回</small></div></div>
+  `).join('') : '<div class="empty">スタンプ送信なし</div>';
+  
+  const pTop = sortMap(m.photoUsers);
+  document.getElementById('photoRanking').innerHTML = pTop.length ? pTop.map(([u,n], i) => `
+    <div class="member"><div class="avatar">${i+1}</div><div class="meta"><b>${esc(u)}</b><small>${n} 回</small></div></div>
+  `).join('') : '<div class="empty">写真・動画送信なし</div>';
+  
+  const oTop = sortMap(m.otherUsers);
+  document.getElementById('otherMediaRanking').innerHTML = oTop.length ? oTop.map(([u,n], i) => `
+    <div class="member"><div class="avatar">${i+1}</div><div class="meta"><b>${esc(u)}</b><small>${n} 回</small></div></div>
+  `).join('') : '<div class="empty">その他メディア送信なし</div>';
+}
+
 function renderUsers(){
   document.getElementById('userRanking').innerHTML=state.users.slice(0,8).map(([u,n],i)=>`<div class="member"><div class="avatar">${i+1}</div><div class="meta"><b>${esc(u)}</b><small>${n} メッセージ</small></div><span class="tag">${Math.round(n/state.rows.length*100)}%</span></div>`).join('');
 }
@@ -784,10 +977,7 @@ function renderMembers(){
   setMetric('top10Share',topShare,'top10Bar'); setMetric('shortRate',shortRate,'shortBar'); setMetric('nightRate',nightRate,'nightRateBar');
 }
 function setMetric(textId,val,barId){ document.getElementById(textId).textContent=Math.round(val*100)+'%'; document.getElementById(barId).style.width=Math.round(val*100)+'%'; }
-function renderChart(){
-  const el=document.getElementById('miniChart'), max=Math.max(...Array.from({length:24},(_,i)=>state.times[i]||0),1);
-  el.innerHTML=Array.from({length:24},(_,i)=>`<div class="col"><span style="--h:${Math.max(4,Math.round((state.times[i]||0)/max*130))}px"></span><label class="chart-hour">${i}</label></div>`).join('');
-}
+
 function renderAutoWords(){
   document.getElementById('autoWords').innerHTML=state.words.slice(0,16).map(([w,n])=>`<span class="chip">${esc(w)} [${n}]</span>`).join('');
 }
@@ -895,7 +1085,6 @@ function searchKeyword(){
   document.getElementById('keywordResults').innerHTML=found.length?found.slice(0,30).map(x=>`<div class="member"><div class="avatar">🔎</div><div class="meta"><b style="color:var(--theme-color)">${esc(x.k)} · ${esc(x.user)}</b><small>${esc(x.date)} ${esc(x.time)} // ${esc(x.text)}</small></div></div>`).join(''):'<div class="empty">見つかりませんでした。</div>';
 }
 
-// ----- 新機能: ユーザー発言抽出 -----
 function updateUserSelect() {
   const select = document.getElementById('userSelect');
   if(!select) return;
@@ -933,7 +1122,6 @@ document.getElementById('extractUserBtn').onclick = () => {
     </div>
   `).join('') : '<div class="empty">このユーザーの発言はありません。</div>';
 };
-// ----------------------------------
 
 function lottery(){
   const arr=document.getElementById('lotteryInput').value.split(',').map(s=>s.trim()).filter(Boolean);
@@ -955,12 +1143,20 @@ document.getElementById('sampleBtn').onclick=()=>{document.getElementById('chatI
 document.getElementById('clearBtn').onclick=()=>{
   document.getElementById('chatInput').value='';
   state.raw=''; state.rows=[]; state.users=[]; state.words=[]; state.times={}; state.risks=[];
+  state.daily={}; state.media={ stamps:0, photos:0, videos:0, others:0, stampUsers:{}, photoUsers:{}, otherUsers:{} };
   document.getElementById('analysisSummary').innerHTML='<div class="empty">データが初期化されていません。</div>';
   document.getElementById('timeBreakdown').innerHTML='<div class="empty">分析を待機中...</div>';
   document.getElementById('userRanking').innerHTML='<div class="empty">分析を待機中...</div>';
   document.getElementById('wordRanking').innerHTML='<div class="empty">分析を待機中...</div>';
   document.getElementById('userSelect').innerHTML='<option value="">ユーザーを選択してください...</option>';
   document.getElementById('userLogResults').innerHTML='<div class="empty">ユーザーを選択して「発言を抽出」ボタンを押してください。</div>';
+  document.getElementById('dailyChart').innerHTML='';
+  document.getElementById('dailyList').innerHTML='<div class="empty">分析を待機中...</div>';
+  document.getElementById('dailyInsights').innerHTML='<div class="notice">十分なデータがありません。</div>';
+  document.getElementById('mediaSummary').innerHTML='<div class="empty">分析を待機中...</div>';
+  document.getElementById('stampRanking').innerHTML='<div class="empty">分析を待機中...</div>';
+  document.getElementById('photoRanking').innerHTML='<div class="empty">分析を待機中...</div>';
+  document.getElementById('otherMediaRanking').innerHTML='<div class="empty">分析を待機中...</div>';
 };
 document.getElementById('analyzeBtn').onclick=analyze;
 document.getElementById('keywordBtn').onclick=searchKeyword;
@@ -980,7 +1176,7 @@ document.getElementById('exportBtn').onclick=(e)=>{
   e.stopPropagation();
   const payload={
     app:'POPI-OP',
-    version:'2.4',
+    version:'2.6',
     exportedAt:new Date().toISOString(),
     messages:state.rows.length,
     members:state.users.length,
