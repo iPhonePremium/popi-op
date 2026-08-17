@@ -229,13 +229,14 @@ a { text-decoration: none; color: inherit; }
 .gap { display: grid; gap: 10px; width: 100%; }
 .mt { margin-top: 16px; }
 
-textarea, .input {
+textarea, select, .input {
   width: 100%; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--line);
   padding: 12px; color: #fff; outline: none; font-family: monospace; font-size: 13px;
   border-radius: 4px;
   transition: all 0.3s;
 }
-textarea:focus, .input:focus {
+select option { background: #1a1a2e; color: #fff; }
+textarea:focus, select:focus, .input:focus {
   border-color: var(--theme-color); background: rgba(0,0,0,0.6);
   box-shadow: inset 0 0 8px var(--theme-dim), 0 0 12px var(--theme-glow);
 }
@@ -359,6 +360,8 @@ input[type="file"] { display: none; }
       <button type="button" data-section="analysis"><span class="emoji">📊</span><div><span>トーク分析</span><span class="en-sub">ANALYSIS</span></div></button>
       <button type="button" data-section="members"><span class="emoji">👥</span><div><span>メンバー分析</span><span class="en-sub">MEMBERS</span></div></button>
       <button type="button" data-section="keywords"><span class="emoji">🔎</span><div><span>キーワード</span><span class="en-sub">KEYWORDS</span></div></button>
+      <!-- 追加: ユーザー発言抽出機能へのナビ -->
+      <button type="button" data-section="userlog"><span class="emoji">🕵️</span><div><span>発言抽出</span><span class="en-sub">USER LOG</span></div></button>
       <button type="button" data-section="moderation"><span class="emoji">🛡️</span><div><span>荒らしチェック</span><span class="en-sub">SECURITY</span></div></button>
       <button type="button" data-section="tools"><span class="emoji">🧰</span><div><span>便利ツール</span><span class="en-sub">TOOLS</span></div></button>
       <button type="button" data-section="settings"><span class="emoji">⚙️</span><div><span>設定</span><span class="en-sub">CONFIG</span></div></button>
@@ -416,7 +419,7 @@ input[type="file"] { display: none; }
             <h4>システムメモ</h4>
             <div class="gap">
               <div class="notice">LINEの「トーク履歴を送信」で出力した `.txt` ファイルをそのまま読み込める専用パーサーを搭載しています。</div>
-              <div class="notice warn">※ 荒らし検知は補助的な予測機能です。BAN等の最終的な判断は管理者が行ってください。</div>
+              <div class="notice warn">※ ぽぴぃオプ（カフェオプ）のデータ以外は分析できないように制限がかかっています。</div>
             </div>
           </div>
         </div>
@@ -469,6 +472,25 @@ input[type="file"] { display: none; }
         <div class="panel mt">
           <h4>🚀 自動抽出された注目ワード</h4>
           <div class="chips" id="autoWords"><span class="muted small">分析後に自動でタグ付けされます。</span></div>
+        </div>
+      </section>
+
+      <!-- 追加: ユーザー発言抽出セクション -->
+      <section id="userlog" class="section">
+        <div class="section-head">
+          <div>
+            <h3>発言抽出 <span class="en-title">// USER LOG EXTRACTOR</span></h3>
+            <p>特定のメンバーの全発言を時系列で一覧表示し、過去の行動を振り返ります。</p>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="toolbar">
+            <select id="userSelect" class="input" style="max-width:320px">
+              <option value="">ユーザーを選択してください...</option>
+            </select>
+            <button type="button" class="btn primary" id="extractUserBtn">発言を抽出</button>
+          </div>
+          <div id="userLogResults" class="empty mt">ユーザーを選択して「発言を抽出」ボタンを押してください。</div>
         </div>
       </section>
 
@@ -543,7 +565,7 @@ input[type="file"] { display: none; }
         </div>
       </section>
       
-      <div class="footer">ぽぴぃオプ // CYBERPUNK EDITION v2.3 / LINE MULTI-LINE PARSER</div>
+      <div class="footer">ぽぴぃオプ // CYBERPUNK EDITION v2.4 / LINE MULTI-LINE PARSER</div>
     </div>
   </main>
 </div>
@@ -570,7 +592,10 @@ document.getElementById('themeBtn').onclick = () => {
 
 const state = { raw:"", rows:[], users:[], words:[], times:{}, risks:[] };
 
-const sample = `2026/08/16(日) 20:01\tたろう\tこんばんは！
+// サンプルデータも検証をパスするように修正
+const sample = `[LINE] 蹴られる前にアナウンス打ったら副官🎁　～2代目カフェオプ（元ぽぴオプ）～のトーク
+保存日時：2026/08/16 21:05
+2026/08/16(日) 20:01\tたろう\tこんばんは！
 2026/08/16(日) 20:02\tみお\tこんばんは〜
 2026/08/16(日) 20:03\tたろう\t今日めっちゃ人いるね
 2026/08/16(日) 20:03\tけん\tよろしく！
@@ -594,6 +619,7 @@ function go(id){
     analysis:['SYSTEM / ANALYSIS','トーク分析'],
     members:['SYSTEM / MEMBERS','メンバー分析'],
     keywords:['SYSTEM / KEYWORDS','キーワード検索'],
+    userlog:['SYSTEM / USER LOG','発言抽出'],
     moderation:['SYSTEM / SECURITY','荒らしチェック'],
     tools:['SYSTEM / TOOLS','便利ツール'],
     settings:['SYSTEM / CONFIG','システム設定']
@@ -617,15 +643,13 @@ function handleFileSelect(e) {
 document.getElementById('fileInput').addEventListener('change', handleFileSelect);
 document.getElementById('fileInput2').addEventListener('change', handleFileSelect);
 
-// ----- LINEマルチラインパーサーの強化 -----
+// ----- LINEマルチラインパーサー -----
 function parseRows(raw){
   const lines = raw.split(/\r?\n/);
   const out = [];
   let currentDate = "2026/08/02"; // デフォルト
 
-  // 日付ヘッダーの正規表現 (例: 2026/8/2(日))
   const dateHeaderRe = /^(\d{4}\/\d{1,2}\/\d{1,2})\([^)]+\)$/;
-  // メッセージ行の正規表現 (例: 16:20\tAuto-reply\t...) または (16:48\t圧倒的出入り激しい奴\t...)
   const msgRe = /^(\d{1,2}:\d{2})\t([^\t]+)\t?(.*)$/;
 
   let lastMsg = null;
@@ -633,21 +657,16 @@ function parseRows(raw){
   lines.forEach(line => {
     const trimmed = line.trim();
     if(!trimmed) return;
-
-    // ヘッダーや保存日時の行はスキップ
     if(trimmed.startsWith('[LINE]') || trimmed.startsWith('保存日時：')) return;
 
-    // 日付行の判定
     let dMatch = trimmed.match(dateHeaderRe);
     if(dMatch) {
       currentDate = dMatch[1];
       return;
     }
 
-    // 通常メッセージ行の判定
     let m = trimmed.match(msgRe);
     if(m) {
-      // 正常なメッセージ行
       lastMsg = {
         date: currentDate,
         time: m[1],
@@ -656,10 +675,7 @@ function parseRows(raw){
       };
       out.push(lastMsg);
     } else {
-      // 改行をまたいだメッセージの続きとみなして直前のメッセージに結合する
-      if(lastMsg) {
-        lastMsg.text += "\n" + trimmed;
-      }
+      if(lastMsg) lastMsg.text += "\n" + trimmed;
     }
   });
 
@@ -669,6 +685,19 @@ function parseRows(raw){
 function analyze(){
   const raw=document.getElementById('chatInput').value.trim();
   if(!raw){ alert('トークデータを読み込むか、貼り付けてください。'); return; }
+  
+  // --- データ検証：ぽぴぃオプのデータか確認 ---
+  const firstLine = raw.split(/\r?\n/)[0];
+  if (!firstLine.includes('[LINE]')) {
+    alert('エラー：LINEのトーク履歴ファイルではありません。\n1行目に [LINE] という記述が見つかりません。');
+    return;
+  }
+  if (!firstLine.includes('カフェオプ') && !firstLine.includes('ぽぴオプ') && !firstLine.includes('ぽぴぃオプ')) {
+    alert('エラー：このツールは「ぽぴぃオプ（カフェオプ）」のデータ専用です。\n他のトーク履歴の分析は許可されていません。');
+    return;
+  }
+  // ------------------------------------------
+
   state.raw=raw; state.rows=parseRows(raw);
   if(!state.rows.length){ alert('形式を読み取れませんでした。LINEのトーク書き出しファイルを選択してください。'); return; }
 
@@ -681,22 +710,15 @@ function analyze(){
     if(h>=20 || h<=1) night++;
     r.text.replace(/https?:\/\/\S+/g,'').split(/[\s、。,.!?！？「」『』（）()\[\]【】\n]+/).forEach(w=>{
       const t=w.trim();
-
-      // 時刻を「よく出る言葉」に入れない
       const normalized = t.replace(/[：]/g, ':').trim();
       const isTime = /^(?:[01]?\d|2[0-3]):[0-5]\d$/.test(normalized);
       const isTimeLike = /^(?:[01]?\d|2[0-3])\s*[:：]\s*[0-5]\d$/.test(normalized);
-
-      // 日付・日時っぽいものも除外
       const isDate = /^\d{4}[\/\-.]\d{1,2}[\/\-.]\d{1,2}$/.test(normalized);
       const isDateTime = /^\d{4}[\/\-.]\d{1,2}[\/\-.]\d{1,2}[ T].*$/.test(normalized);
 
       if(
         normalized.length>=2 &&
-        !isTime &&
-        !isTimeLike &&
-        !isDate &&
-        !isDateTime &&
+        !isTime && !isTimeLike && !isDate && !isDateTime &&
         !/^\d+$/.test(normalized) &&
         !/^[\W_]+$/u.test(normalized)
       ){
@@ -725,6 +747,8 @@ function analyze(){
   renderRisks();
   renderChart();
   renderAutoWords();
+  updateUserSelect(); // 新機能：ユーザー抽出のセレクトボックス更新
+  
   go('analysis');
 }
 
@@ -810,7 +834,6 @@ function moderationLogin(){
 }
 function moderationLogout(){sessionStorage.removeItem('popi_mod_auth');updateModerationView();}
 
-// ----- 荒らしチェックの集約と除外ロジック修正 -----
 function detectRisks(){
   const risksMap={}, optFlood=document.getElementById('optFlood').checked, optUrl=document.getElementById('optUrl').checked;
   const urlByUser={}, userRecent={};
@@ -835,7 +858,6 @@ function detectRisks(){
       getNgWords().forEach(k=>{
         if(k && r.text.includes(k)){
           const d=getNgDecision(k);
-          // OK(allow)と押されたワードはリスクとして追加しない
           if(d !== 'allow'){
             addRisk(r.user, `要確認ワード「${k}」: ${d==='block'?'表示NG':'未判定'}`);
           }
@@ -852,12 +874,8 @@ function detectRisks(){
     if(idxs.length>=3) addRisk(state.rows[idxs[0]].user, `同一文面「${t.slice(0,12)}...」を繰り返し`);
   });
   
-  // マップから配列に変換
   const risks = Object.keys(risksMap).map(user => {
-    return {
-      user: user,
-      reason: Array.from(risksMap[user]).join(' / ')
-    };
+    return { user: user, reason: Array.from(risksMap[user]).join(' / ') };
   });
   
   state.risks=risks.slice(0,30);
@@ -876,6 +894,46 @@ function searchKeyword(){
   state.rows.forEach(r=>{qs.forEach(k=>{if(r.text.includes(k)) found.push({k,...r})})});
   document.getElementById('keywordResults').innerHTML=found.length?found.slice(0,30).map(x=>`<div class="member"><div class="avatar">🔎</div><div class="meta"><b style="color:var(--theme-color)">${esc(x.k)} · ${esc(x.user)}</b><small>${esc(x.date)} ${esc(x.time)} // ${esc(x.text)}</small></div></div>`).join(''):'<div class="empty">見つかりませんでした。</div>';
 }
+
+// ----- 新機能: ユーザー発言抽出 -----
+function updateUserSelect() {
+  const select = document.getElementById('userSelect');
+  if(!select) return;
+  select.innerHTML = '<option value="">ユーザーを選択してください...</option>';
+  state.users.forEach(([u, n]) => {
+    const opt = document.createElement('option');
+    opt.value = u;
+    opt.textContent = `${u} (${n}件)`;
+    select.appendChild(opt);
+  });
+}
+
+document.getElementById('extractUserBtn').onclick = () => {
+  const user = document.getElementById('userSelect').value;
+  const resultsDiv = document.getElementById('userLogResults');
+  
+  if (!state.rows.length) {
+    resultsDiv.innerHTML = '<div class="notice warn">先にトーク分析を実行してください。</div>';
+    return;
+  }
+  if (!user) {
+    resultsDiv.innerHTML = '<div class="empty">抽出したいユーザーを選択してください。</div>';
+    return;
+  }
+  
+  const found = state.rows.filter(r => r.user === user);
+  
+  resultsDiv.innerHTML = found.length ? found.map(x => `
+    <div class="member" style="align-items:flex-start">
+      <div class="avatar" style="font-size:12px;">👤</div>
+      <div class="meta">
+        <small style="color:var(--theme-color); margin-bottom:4px; font-family:'Orbitron'; font-weight:700">${esc(x.date)} ${esc(x.time)}</small>
+        <div style="font-size:13px; color:#fff; white-space:pre-wrap; line-height:1.6">${esc(x.text)}</div>
+      </div>
+    </div>
+  `).join('') : '<div class="empty">このユーザーの発言はありません。</div>';
+};
+// ----------------------------------
 
 function lottery(){
   const arr=document.getElementById('lotteryInput').value.split(',').map(s=>s.trim()).filter(Boolean);
@@ -901,6 +959,8 @@ document.getElementById('clearBtn').onclick=()=>{
   document.getElementById('timeBreakdown').innerHTML='<div class="empty">分析を待機中...</div>';
   document.getElementById('userRanking').innerHTML='<div class="empty">分析を待機中...</div>';
   document.getElementById('wordRanking').innerHTML='<div class="empty">分析を待機中...</div>';
+  document.getElementById('userSelect').innerHTML='<option value="">ユーザーを選択してください...</option>';
+  document.getElementById('userLogResults').innerHTML='<div class="empty">ユーザーを選択して「発言を抽出」ボタンを押してください。</div>';
 };
 document.getElementById('analyzeBtn').onclick=analyze;
 document.getElementById('keywordBtn').onclick=searchKeyword;
@@ -910,7 +970,6 @@ document.getElementById('modPassInput').addEventListener('keydown',e=>{if(e.key=
 
 updateModerationView();
 
-// ----- 存在しないIDへのアクセスエラー修正 -----
 const importBtnEl = document.getElementById('importBtn');
 if(importBtnEl) importBtnEl.onclick=()=>document.getElementById('modal').classList.add('show');
 const modalCloseEl = document.getElementById('modalClose');
@@ -921,7 +980,7 @@ document.getElementById('exportBtn').onclick=(e)=>{
   e.stopPropagation();
   const payload={
     app:'POPI-OP',
-    version:'2.3',
+    version:'2.4',
     exportedAt:new Date().toISOString(),
     messages:state.rows.length,
     members:state.users.length,
@@ -936,7 +995,7 @@ document.getElementById('exportBtn').onclick=(e)=>{
   a.href=url;
   a.download='popi-op-cyber-data.json';
   a.rel='noopener';
-  a.target='_blank'; // 制約対策で追加
+  a.target='_blank';
   a.style.display='none';
   document.body.appendChild(a);
   a.click();
@@ -983,4 +1042,5 @@ function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;',
 </script>
 </body>
 </html>
+
 
