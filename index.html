@@ -683,17 +683,14 @@ function analyze(){
       const t=w.trim();
 
       // 時刻を「よく出る言葉」に入れない
-      // 例: 14:42 / 9:05 / 23:59
       const normalized = t.replace(/[：]/g, ':').trim();
       const isTime = /^(?:[01]?\d|2[0-3]):[0-5]\d$/.test(normalized);
       const isTimeLike = /^(?:[01]?\d|2[0-3])\s*[:：]\s*[0-5]\d$/.test(normalized);
 
       // 日付・日時っぽいものも除外
-      // 例: 2026/08/16 / 2026-08-16 / 2026.08.16
       const isDate = /^\d{4}[\/\-.]\d{1,2}[\/\-.]\d{1,2}$/.test(normalized);
       const isDateTime = /^\d{4}[\/\-.]\d{1,2}[\/\-.]\d{1,2}[ T].*$/.test(normalized);
 
-      // 数字だけ、記号だけ、時刻だけのトークンも除外
       if(
         normalized.length>=2 &&
         !isTime &&
@@ -792,27 +789,37 @@ function renderNgWords(){
 }
 function isModerationAuthenticated(){return sessionStorage.getItem('popi_mod_auth')==='1';}
 function updateModerationView(){
-  const a=document.getElementById('moderationLogin'),b=document.getElementById('moderationPanel'); if(!a||!b)return;
+  const a=document.getElementById('moderationLogin'),b=document.getElementById('moderationPanel'); if(!a||b===null)return;
   const ok=isModerationAuthenticated();a.style.display=ok?'none':'block';b.style.display=ok?'block':'none';if(ok)renderNgWords();renderRisks();
 }
 function moderationLogin(){
   const id=document.getElementById('modIdInput').value.trim(),p=document.getElementById('modPassInput').value;
   const ok=MOD_ACCOUNTS.some(a=>a.id===id&&a.password===p),r=document.getElementById('modLoginResult');
-  if(ok){sessionStorage.setItem('popi_mod_auth','1');r.textContent='認証しました。';r.style.color='var(--good)';updateModerationView();
-
-document.addEventListener('click',(e)=>{
-  if(e.target.closest && e.target.closest('#exportBtn')) return;
-  const t=e.target.closest && e.target.closest('#moderationPanel button,#moderationLogin button');
-  if(t){ e.stopPropagation(); }
-}, true);
-}
-  else{r.textContent='IDまたはパスワードが違います。';r.style.color='var(--bad)';}
+  if(ok){
+    sessionStorage.setItem('popi_mod_auth','1');
+    r.textContent='認証しました。';r.style.color='var(--good)';
+    updateModerationView();
+    document.addEventListener('click',(e)=>{
+      if(e.target.closest && e.target.closest('#exportBtn')) return;
+      const t=e.target.closest && e.target.closest('#moderationPanel button,#moderationLogin button');
+      if(t){ e.stopPropagation(); }
+    }, true);
+  } else {
+    r.textContent='IDまたはパスワードが違います。';r.style.color='var(--bad)';
+  }
 }
 function moderationLogout(){sessionStorage.removeItem('popi_mod_auth');updateModerationView();}
 
+// ----- 荒らしチェックの集約と除外ロジック修正 -----
 function detectRisks(){
-  const risks=[], optFlood=document.getElementById('optFlood').checked, optUrl=document.getElementById('optUrl').checked;
+  const risksMap={}, optFlood=document.getElementById('optFlood').checked, optUrl=document.getElementById('optUrl').checked;
   const urlByUser={}, userRecent={};
+  
+  const addRisk = (user, reason) => {
+    if(!risksMap[user]) risksMap[user] = new Set();
+    risksMap[user].add(reason);
+  };
+
   state.rows.forEach((r,i)=>{
     if(optUrl && /https?:\/\//.test(r.text)) urlByUser[r.user]=(urlByUser[r.user]||0)+1;
     if(optFlood){
@@ -821,27 +828,47 @@ function detectRisks(){
       const arr=userRecent[r.user]; if(arr.length>=5){
         const a=state.rows[arr[arr.length-5]], c=r;
         const sameMin=(new Date('2000/01/01 '+c.time)-new Date('2000/01/01 '+a.time))/60000;
-        if(sameMin>=0 && sameMin<=1) risks.push({user:r.user,reason:'1分以内に5件以上の連投',index:i});
+        if(sameMin>=0 && sameMin<=1) addRisk(r.user, '1分以内に5件以上の連投');
       }
     }
     if(document.getElementById('optNg').checked){
       getNgWords().forEach(k=>{
         if(k && r.text.includes(k)){
           const d=getNgDecision(k);
-          risks.push({user:r.user,reason:`要確認ワード「${k}」: ${d==='allow'?'表示して大丈夫':d==='block'?'表示NG':'未判定'}`,index:i,ngWord:k,decision:d});
+          // OK(allow)と押されたワードはリスクとして追加しない
+          if(d !== 'allow'){
+            addRisk(r.user, `要確認ワード「${k}」: ${d==='block'?'表示NG':'未判定'}`);
+          }
         }
       });
     }
   });
-  Object.entries(urlByUser).forEach(([u,n])=>{if(n>=3) risks.push({user:u,reason:`URL ${n}件を投稿`,index:-1})});
-  const seen={}; state.rows.forEach((r,i)=>{if(r.text.length>=5){seen[r.text]=(seen[r.text]||[]).concat(i)}}); Object.entries(seen).forEach(([t,idxs])=>{if(idxs.length>=3) risks.push({user:state.rows[idxs[0]].user,reason:`同一文面「${t.slice(0,12)}...」を${idxs.length}回`,index:idxs[0]})});
+  
+  Object.entries(urlByUser).forEach(([u,n])=>{if(n>=3) addRisk(u, `URL ${n}件を投稿`)});
+  
+  const seen={}; 
+  state.rows.forEach((r,i)=>{if(r.text.length>=5){seen[r.text]=(seen[r.text]||[]).concat(i)}}); 
+  Object.entries(seen).forEach(([t,idxs])=>{
+    if(idxs.length>=3) addRisk(state.rows[idxs[0]].user, `同一文面「${t.slice(0,12)}...」を繰り返し`);
+  });
+  
+  // マップから配列に変換
+  const risks = Object.keys(risksMap).map(user => {
+    return {
+      user: user,
+      reason: Array.from(risksMap[user]).join(' / ')
+    };
+  });
+  
   state.risks=risks.slice(0,30);
 }
+
 function renderRisks(){
   const el=document.getElementById('riskList'); if(!el)return;
   if(!isModerationAuthenticated()){el.innerHTML='<div class="empty">ID・パスワードで認証すると表示されます。</div>';return;}
   el.innerHTML=state.risks.length?state.risks.map(r=>`<div class="member"><div class="avatar" style="border-color:var(--bad);color:var(--bad)">!</div><div class="meta"><b style="color:var(--bad)">${esc(r.user)}</b><small>${esc(r.reason)}</small></div><span class="tag bad">要確認</span></div>`).join(''):'<div class="empty">現在のルールでは目立った候補はありません。</div>';
 }
+
 function searchKeyword(){
   const q=document.getElementById('keywordInput').value.trim(); if(!q){return}
   if(!state.rows.length){document.getElementById('keywordResults').innerHTML='<div class="notice warn">先にトーク分析を実行してください。</div>';return}
@@ -849,15 +876,18 @@ function searchKeyword(){
   state.rows.forEach(r=>{qs.forEach(k=>{if(r.text.includes(k)) found.push({k,...r})})});
   document.getElementById('keywordResults').innerHTML=found.length?found.slice(0,30).map(x=>`<div class="member"><div class="avatar">🔎</div><div class="meta"><b style="color:var(--theme-color)">${esc(x.k)} · ${esc(x.user)}</b><small>${esc(x.date)} ${esc(x.time)} // ${esc(x.text)}</small></div></div>`).join(''):'<div class="empty">見つかりませんでした。</div>';
 }
+
 function lottery(){
   const arr=document.getElementById('lotteryInput').value.split(',').map(s=>s.trim()).filter(Boolean);
   const el=document.getElementById('lotteryResult'); if(!arr.length){el.textContent='候補者を入力してください。';return}
   el.innerHTML=`<div style="font-size:22px;font-weight:900;color:var(--theme-color);text-shadow:0 0 8px var(--theme-glow);">${esc(arr[Math.floor(Math.random()*arr.length)])}</div><div class="muted small mt">> 当選 🎉</div>`;
 }
+
 function formatNotice(){
   const t=document.getElementById('noticeInput').value.trim(); if(!t)return;
   document.getElementById('noticeInput').value='📢 お知らせ\n\n'+t.replace(/[！!]{2,}/g,'！').replace(/\n{3,}/g,'\n\n')+'\n\nご確認よろしくお願いします。';
 }
+
 const ideas=['自動ウェルカム文を時間帯で切り替える','定型文をワンタップコピー','発言急増アラート','今週の人気メンバー集計','匿名アンケートメーカー','イベント用カウントダウン','画像URLの安全チェック','管理者向け当番表'];
 document.getElementById('ideaBtn').onclick=()=>document.getElementById('ideaResult').innerHTML='<div style="font-size:14px;font-weight:700;color:#fff;">> '+esc(ideas[Math.floor(Math.random()*ideas.length)])+'</div>';
 document.getElementById('lotteryBtn').onclick=lottery;
@@ -877,9 +907,14 @@ document.getElementById('keywordBtn').onclick=searchKeyword;
 document.getElementById('modLoginBtn').onclick=(e)=>{e.preventDefault();e.stopPropagation();moderationLogin();return false;};
 document.getElementById('modLogoutBtn').onclick=(e)=>{e.preventDefault();e.stopPropagation();moderationLogout();return false;};
 document.getElementById('modPassInput').addEventListener('keydown',e=>{if(e.key==='Enter')moderationLogin();});
+
 updateModerationView();
-document.getElementById('importBtn').onclick=()=>document.getElementById('modal').classList.add('show');
-document.getElementById('modalClose').onclick=()=>document.getElementById('modal').classList.remove('show');
+
+// ----- 存在しないIDへのアクセスエラー修正 -----
+const importBtnEl = document.getElementById('importBtn');
+if(importBtnEl) importBtnEl.onclick=()=>document.getElementById('modal').classList.add('show');
+const modalCloseEl = document.getElementById('modalClose');
+if(modalCloseEl) modalCloseEl.onclick=()=>document.getElementById('modal').classList.remove('show');
 
 document.getElementById('exportBtn').onclick=(e)=>{
   e.preventDefault();
@@ -901,6 +936,7 @@ document.getElementById('exportBtn').onclick=(e)=>{
   a.href=url;
   a.download='popi-op-cyber-data.json';
   a.rel='noopener';
+  a.target='_blank'; // 制約対策で追加
   a.style.display='none';
   document.body.appendChild(a);
   a.click();
@@ -920,12 +956,15 @@ document.getElementById('exportBtn').onclick=(e)=>{
   },100);
   return false;
 };
+
 document.getElementById('copyReportBtn').onclick=async()=>{
   if(!state.rows.length)return;
   const txt=`ぽぴぃオプ 分析レポート\n総メッセージ: ${state.rows.length}\nメンバー: ${state.users.length}\n最多発言: ${state.users[0]?.[0]||'-'} (${state.users[0]?.[1]||0})\nピーク時間: ${document.getElementById('statPeak').textContent}\n注目ワード: ${state.words.slice(0,8).map(x=>x[0]).join(', ')}`;
   await navigator.clipboard?.writeText(txt); alert('分析レポートをコピーしました。');
 };
+
 document.getElementById('wipeBtn').onclick=()=>{if(confirm('ブラウザ内の一時データを消去しますか？')){localStorage.clear();location.reload();}};
+
 function updateClock(){
   const el=document.getElementById('clock');
   if(!el) return;
